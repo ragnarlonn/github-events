@@ -296,6 +296,28 @@ type Commit struct {
 	Parents     []TreeObject `json:"parents,omitempty"`
 }
 
+type Installation struct {
+	AccessTokensURL        *string           `json:"access_tokens_url,omitempty"`
+	Account                *User             `json:"account,omitempty"`
+	AppID                  *int              `json:"app_id,omitempty"`
+	AppSlug                *string           `json:"app_slug,omitempty"`
+	CreatedAt              *time.Time        `json:"created_at,omitempty"`
+	Events                 []string          `json:"events,omitempty"`
+	HasMultipleSingleFiles *bool             `json:"has_multiple_single_files,omitempty"`
+	HTMLURL                *string           `json:"html_url,omitempty"`
+	ID                     *int              `json:"id,omitempty"`
+	Permissions            map[string]string `json:"permissions,omitempty"`
+	RepositoriesURL        *string           `json:"repositories_url,omitempty"`
+	RepositorySelection    *string           `json:"repository_selection,omitempty"`
+	SingleFileName         *string           `json:"single_file_name,omitempty"`
+	SingleFilePaths        []string          `json:"single_file_paths,omitempty"`
+	SuspendedAt            *time.Time        `json:"suspended_at,omitempty"`
+	SuspendedBy            *string           `json:"suspended_by,omitempty"`
+	TargetID               *int              `json:"target_id,omitempty"`
+	TargetType             *string           `json:"target_type,omitempty"`
+	UpdatedAt              *time.Time        `json:"updated_at,omitempty"`
+}
+
 type PullRequest struct {
 	// XXX TODO
 }
