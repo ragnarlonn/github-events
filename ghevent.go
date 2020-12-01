@@ -1,5 +1,20 @@
 package ghevent
 
+//
+// This package tries to describe the Github REST API, to make JSON encoding/decoding
+// of Github data easier.
+//
+// - JSON fields used by the Github API will be CamelCase:d variables or types here
+//   (i.e. a field called "head_commit" will become a Golang struct field called "HeadCommit"
+//
+// - All struct fields are pointers, which means that a missing JSON field will turn into
+//   a nil pointer. This allows the user to detect which fields were present in the JSON
+//   and which weren't (i.e. nil fields were NOT present)
+//
+// - When the structs are used to encode JSON data, empty fields will not be encoded -
+//   all struct fields have an "omitempty" in their struct tags
+//
+
 import "time"
 
 type PushEvent struct {
@@ -55,6 +70,23 @@ type PullRequestEvent struct {
 	PullRequest *PullRequest `json:"pull_request,omitempty"`
 	Repository  *Repository  `json:"repository,omitempty"`
 	Sender      *User        `json:"sender,omitempty"`
+}
+
+// X-Github-Event: "installation"
+type InstallationEvent struct {
+	Action       *string       `json:"action,omitempty"` // "created" | "deleted"
+	Installation *Installation `json:"installation,omitempty"`
+	Repositories []Repository  `json:"repositories,omitempty"`
+	Sender       *User         `json:"sender,omitempty"`
+}
+
+// X-Github-Event: "installation_repositories"
+type InstallationRepositoriesEvent struct {
+	Action              *string       `json:"action,omitempty"` // "added" | "removed"
+	Installation        *Installation `json:"installation,omitempty"`
+	RepositoriesAdded   []Repository  `json:"repositories_added,omitempty"`
+	RepositoriesRemoved []Repository  `json:"repositories_removed,omitempty"`
+	Sender              *User         `json:"sender,omitempty"`
 }
 
 //
