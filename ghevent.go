@@ -161,7 +161,7 @@ type Milestone struct {
 	State        *string    `json:"state,omitempty"`
 	Title        *string    `json:"title,omitempty"`
 	Description  *string    `json:"description,omitempty"`
-	Creator      *User      `json:"creator,omitempty"`
+	Creator      *Account   `json:"creator,omitempty"`
 	OpenIssues   *int       `json:"open_issues,omitempty"`
 	ClosedIssues *int       `json:"closed_issues,omitempty"`
 	CreatedAt    *time.Time `json:"created_at,omitempty"`
