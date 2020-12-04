@@ -17,6 +17,10 @@ package ghevent
 
 import "time"
 
+//
+// Events
+//
+
 type PushEvent struct {
 	Ref        *string     `json:"ref,omitempty"`
 	Before     *string     `json:"before,omitempty"`
@@ -62,8 +66,6 @@ type LabelEvent struct {
 	Sender     *Account    `json:"sender,omitempty"`
 }
 
-// type MarketplacePurchaseEvent struct {
-
 type PullRequestEvent struct {
 	Action      *string      `json:"action,omitempty"`
 	Number      *int         `json:"number,omitempty"`
@@ -90,7 +92,7 @@ type InstallationRepositoriesEvent struct {
 }
 
 //
-// Objects sent in the various events
+// Objects
 //
 
 type IssueComment struct {
@@ -388,6 +390,15 @@ type MarketplacePurchase struct {
 
 type PullRequest struct {
 	// XXX TODO
+}
+
+//
+// API responses
+//
+// Endpoint: /user/installations
+type UserInstallationResponse struct {
+	Installations []Installation `json:"installations"`
+	TotalCount    int            `json:"total_count"`
 }
 
 /*
