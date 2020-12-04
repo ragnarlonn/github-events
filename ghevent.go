@@ -396,7 +396,7 @@ type PullRequest struct {
 // API responses
 //
 // Endpoint: /user/installations
-type UserInstallationResponse struct {
+type UserInstallationsResponse struct {
 	Installations []Installation `json:"installations"`
 	TotalCount    int            `json:"total_count"`
 }
