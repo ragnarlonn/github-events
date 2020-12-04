@@ -30,13 +30,13 @@ type PushEvent struct {
 	HeadCommit *Commit     `json:"head_commit,omitempty"`
 	Repository *Repository `json:"repository,omitempty"`
 	Pusher     *EmailUser  `json:"pusher,omitempty"`
-	Sender     *User       `json:"sender,omitempty"`
+	Sender     *Account    `json:"sender,omitempty"`
 }
 
 type ForkEvent struct {
 	Forkee     *Repository `json:"forkee,omitempty"`
 	Repository *Repository `json:"repository,omitempty"`
-	Sender     *User       `json:"sender,omitempty"`
+	Sender     *Account    `json:"sender,omitempty"`
 }
 
 type IssueCommentEvent struct {
@@ -44,7 +44,7 @@ type IssueCommentEvent struct {
 	Issue      *Issue        `json:"issue,omitempty"`
 	Comment    *IssueComment `json:"comment,omitempty"`
 	Repository *Repository   `json:"repository,omitempty"`
-	Sender     *User         `json:"sender,omitempty"`
+	Sender     *Account      `json:"sender,omitempty"`
 }
 
 type IssuesEvent struct {
@@ -52,14 +52,14 @@ type IssuesEvent struct {
 	Issue  *Issue  `json:"issue,omitempty"`
 	// Changes ??? object `json:"changes,omitempty"`
 	Repository *Repository `json:"repository,omitempty"`
-	Sender     *User       `json:"sender,omitempty"`
+	Sender     *Account    `json:"sender,omitempty"`
 }
 
 type LabelEvent struct {
 	Action     *string     `json:"action,omitempty"`
 	Label      *Label      `json:"label,omitempty"`
 	Repository *Repository `json:"repository,omitempty"`
-	Sender     *User       `json:"sender,omitempty"`
+	Sender     *Account    `json:"sender,omitempty"`
 }
 
 // type MarketplacePurchaseEvent struct {
@@ -69,7 +69,7 @@ type PullRequestEvent struct {
 	Number      *int         `json:"number,omitempty"`
 	PullRequest *PullRequest `json:"pull_request,omitempty"`
 	Repository  *Repository  `json:"repository,omitempty"`
-	Sender      *User        `json:"sender,omitempty"`
+	Sender      *Account     `json:"sender,omitempty"`
 }
 
 // X-Github-Event: "installation"
@@ -77,7 +77,7 @@ type InstallationEvent struct {
 	Action       *string       `json:"action,omitempty"` // "created" | "deleted"
 	Installation *Installation `json:"installation,omitempty"`
 	Repositories []Repository  `json:"repositories,omitempty"`
-	Sender       *User         `json:"sender,omitempty"`
+	Sender       *Account      `json:"sender,omitempty"`
 }
 
 // X-Github-Event: "installation_repositories"
@@ -86,7 +86,7 @@ type InstallationRepositoriesEvent struct {
 	Installation        *Installation `json:"installation,omitempty"`
 	RepositoriesAdded   []Repository  `json:"repositories_added,omitempty"`
 	RepositoriesRemoved []Repository  `json:"repositories_removed,omitempty"`
-	Sender              *User         `json:"sender,omitempty"`
+	Sender              *Account      `json:"sender,omitempty"`
 }
 
 //
@@ -99,7 +99,7 @@ type IssueComment struct {
 	IssueURL          *string    `json:"issue_url,omitempty"`
 	ID                *int       `json:"id,omitempty"`
 	NodeID            *string    `json:"node_id,omitempty"`
-	User              *User      `json:"user,omitempty"`
+	User              *Account   `json:"user,omitempty"`
 	CreatedAt         *time.Time `json:"created_at,omitempty"`
 	UpdatedAt         *time.Time `json:"updated_at,omitempty"`
 	AuthorAssociation *string    `json:"author_association,omitempty"`
@@ -119,10 +119,10 @@ type Issue struct {
 	State            *string           `json:"state,omitempty"`
 	Title            *string           `json:"title,omitempty"`
 	Body             *string           `json:"body,omitempty"`
-	User             *User             `json:"user,omitempty"`
+	User             *Account          `json:"user,omitempty"`
 	Labels           []Label           `json:"labels,omitempty"`
-	Assignee         *User             `json:"assignee,omitempty"`
-	Assignees        []User            `json:"assignees,omitempty"`
+	Assignee         *Account          `json:"assignee,omitempty"`
+	Assignees        []Account         `json:"assignees,omitempty"`
 	Milestone        *Milestone        `json:"milestone,omitempty"`
 	Locked           *bool             `json:"locked,omitempty"`
 	ActiveLockReason *string           `json:"active_lock_reason,omitempty"`
@@ -131,7 +131,7 @@ type Issue struct {
 	ClosedAt         *time.Time        `json:"closed_at,omitempty"`
 	CreatedAt        *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt        *time.Time        `json:"updated_at,omitempty"`
-	ClosedBy         *User             `json:"closed_by,omitempty"`
+	ClosedBy         *Account          `json:"closed_by,omitempty"`
 }
 
 type IssuePullRequest struct {
@@ -176,7 +176,7 @@ type Repository struct {
 	Name             *string    `json:"name,omitempty"`
 	FullName         *string    `json:"full_name,omitempty"`
 	Private          *bool      `json:"private,omitempty"`
-	Owner            *User      `json:"owner,omitempty"`
+	Owner            *Account   `json:"owner,omitempty"`
 	HTMLURL          *string    `json:"html_url,omitempty"`
 	Description      *string    `json:"description,omitempty"`
 	Fork             *bool      `json:"fork,omitempty"`
@@ -248,39 +248,42 @@ type Repository struct {
 	MasterBranch     *string    `json:"master_branch,omitempty"`
 }
 
-type User struct {
-	Login             *string    `json:"login,omitempty"`
-	ID                *int       `json:"id,omitempty"`
-	NodeID            *string    `json:"node_id,omitempty"`
-	AvatarURL         *string    `json:"avatar_url,omitempty"`
-	GravatarID        *string    `json:"gravatar_id,omitempty"`
-	URL               *string    `json:"url,omitempty"`
-	HTMLURL           *string    `json:"html_url,omitempty"`
-	FollowersURL      *string    `json:"followers_url,omitempty"`
-	FollowingURL      *string    `json:"following_url,omitempty"`
-	GistsURL          *string    `json:"gists_url,omitempty"`
-	StarredURL        *string    `json:"starred_url,omitempty"`
-	SubscriptionsURL  *string    `json:"subscriptions_url,omitempty"`
-	OrganizationsURL  *string    `json:"organizations_url,omitempty"`
-	ReposURL          *string    `json:"repos_url,omitempty"`
-	EventsURL         *string    `json:"events_url,omitempty"`
-	ReceivedEventsURL *string    `json:"received_events_url,omitempty"`
-	Type              *string    `json:"type,omitempty"`
-	SiteAdmin         *bool      `json:"site_admin,omitempty"`
-	Name              *string    `json:"name,omitempty"`
-	Company           *string    `json:"company,omitempty"`
-	Blog              *string    `json:"blog,omitempty"`
-	Location          *string    `json:"location,omitempty"`
-	Email             *string    `json:"email,omitempty"`
-	Hireable          *bool      `json:"hireable,omitempty"`
-	Bio               *string    `json:"bio,omitempty"`
-	TwitterUsername   *string    `json:"twitter_username,omitempty"`
-	PublicRepos       *int       `json:"public_repos,omitempty"`
-	PublicGists       *int       `json:"public_gists,omitempty"`
-	Followers         *int       `json:"followers,omitempty"`
-	Following         *int       `json:"following,omitempty"`
-	CreatedAt         *time.Time `json:"created_at,omitempty"`
-	UpdatedAt         *time.Time `json:"updated_at,omitempty"`
+type Account struct {
+	Login                    *string                   `json:"login,omitempty"`
+	ID                       *int                      `json:"id,omitempty"`
+	NodeID                   *string                   `json:"node_id,omitempty"`
+	AvatarURL                *string                   `json:"avatar_url,omitempty"`
+	GravatarID               *string                   `json:"gravatar_id,omitempty"`
+	URL                      *string                   `json:"url,omitempty"`
+	HTMLURL                  *string                   `json:"html_url,omitempty"`
+	FollowersURL             *string                   `json:"followers_url,omitempty"`
+	FollowingURL             *string                   `json:"following_url,omitempty"`
+	GistsURL                 *string                   `json:"gists_url,omitempty"`
+	StarredURL               *string                   `json:"starred_url,omitempty"`
+	SubscriptionsURL         *string                   `json:"subscriptions_url,omitempty"`
+	OrganizationsURL         *string                   `json:"organizations_url,omitempty"`
+	ReposURL                 *string                   `json:"repos_url,omitempty"`
+	EventsURL                *string                   `json:"events_url,omitempty"`
+	ReceivedEventsURL        *string                   `json:"received_events_url,omitempty"`
+	Type                     *string                   `json:"type,omitempty"`
+	SiteAdmin                *bool                     `json:"site_admin,omitempty"`
+	Name                     *string                   `json:"name,omitempty"`
+	Company                  *string                   `json:"company,omitempty"`
+	Blog                     *string                   `json:"blog,omitempty"`
+	Location                 *string                   `json:"location,omitempty"`
+	Email                    *string                   `json:"email,omitempty"`
+	Hireable                 *bool                     `json:"hireable,omitempty"`
+	Bio                      *string                   `json:"bio,omitempty"`
+	TwitterUsername          *string                   `json:"twitter_username,omitempty"`
+	PublicRepos              *int                      `json:"public_repos,omitempty"`
+	PublicGists              *int                      `json:"public_gists,omitempty"`
+	Followers                *int                      `json:"followers,omitempty"`
+	Following                *int                      `json:"following,omitempty"`
+	CreatedAt                *time.Time                `json:"created_at,omitempty"`
+	UpdatedAt                *time.Time                `json:"updated_at,omitempty"`
+	OrganizationBillingEmail *string                   `json:"organization_billing_email,omitempty"`
+	MarketplacePendingChange *MarketplacePendingChange `json:"marketplace_pending_change,omitempty"`
+	MarketplacePurchase      *MarketplacePurchase      `json:"marketplace_purchase,omitempty"`
 }
 
 type CommitUser struct {
@@ -323,14 +326,14 @@ type Commit struct {
 	HTMLURL     *string      `json:"html_url,omitempty"`
 	CommentsURL *string      `json:"comments_url,omitempty"`
 	Commit      *CommitData  `json:"commit,omitempty"`
-	Author      *User        `json:"author,omitempty"`
-	Committer   *User        `json:"committer,omitempty"`
+	Author      *Account     `json:"author,omitempty"`
+	Committer   *Account     `json:"committer,omitempty"`
 	Parents     []TreeObject `json:"parents,omitempty"`
 }
 
 type Installation struct {
 	AccessTokensURL        *string           `json:"access_tokens_url,omitempty"`
-	Account                *User             `json:"account,omitempty"`
+	Account                *Account          `json:"account,omitempty"`
 	AppID                  *int              `json:"app_id,omitempty"`
 	AppSlug                *string           `json:"app_slug,omitempty"`
 	CreatedAt              *time.Time        `json:"created_at,omitempty"`
@@ -348,6 +351,39 @@ type Installation struct {
 	TargetID               *int              `json:"target_id,omitempty"`
 	TargetType             *string           `json:"target_type,omitempty"`
 	UpdatedAt              *time.Time        `json:"updated_at,omitempty"`
+}
+
+type Plan struct {
+	URL                 *string  `json:"url,omitempty"`
+	AccountsURL         *string  `json:"accounts_url,omitempty"`
+	ID                  *int     `json:"id,omitempty"`
+	Number              *int     `json:"number,omitempty"`
+	Name                *string  `json:"name,omitempty"`
+	Description         *string  `json:"description,omitempty"`
+	MonthlyPriceInCents *int     `json:"monthly_price_in_cents,omitempty"`
+	YearlyPriceInCents  *int     `json:"yearly_price_in_cents,omitempty"`
+	PriceModel          *string  `json:"price_model,omitempty"`
+	HasFreeTrial        *bool    `json:"has_free_trial,omitempty"`
+	State               *string  `json:"state,omitempty"`
+	UnitName            *string  `json:"unit_name,omitempty"`
+	Bullets             []string `json:"bullets,omitempty"`
+}
+
+type MarketplacePendingChange struct {
+	EffectiveDate *time.Time `json:"effective_date,omitempty"`
+	UnitCount     *int       `json:"unit_count,omitempty"`
+	ID            *int       `json:"id,omitempty"`
+	Plan          *Plan      `json:"plan,omitempty"`
+}
+
+type MarketplacePurchase struct {
+	BillingCycle    *string    `json:"billing_cycle,omitempty"`
+	NextBillingDate *time.Time `json:"next_billing_date"`
+	UnitCount       *int       `json:"unit_count,omitempty"`
+	OnFreeTrial     *bool      `json:"on_free_trial,omitempty"`
+	FreeTrialEndsOn *time.Time `json:"free_trial_ends_on,omitempty"`
+	UpdatedAt       *time.Time `json:"updated_at,omitempty"`
+	Plan            *Plan      `json:"plan,omitempty"`
 }
 
 type PullRequest struct {
