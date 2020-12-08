@@ -219,9 +219,9 @@ type Repository struct {
 	LabelsURL        *string    `json:"labels_url,omitempty"`
 	ReleasesURL      *string    `json:"releases_url,omitempty"`
 	DeploymentsURL   *string    `json:"deployments_url,omitempty"`
-	CreatedAt        *uint32    `json:"created_at,omitempty"`
+	CreatedAt        *time.Time `json:"created_at,omitempty"`
 	UpdatedAt        *time.Time `json:"updated_at,omitempty"`
-	PushedAt         *uint32    `json:"pushed_at,omitempty"`
+	PushedAt         *time.Time `json:"pushed_at,omitempty"`
 	GitURL           *string    `json:"git_url,omitempty"`
 	SSHURL           *string    `json:"ssh_url,omitempty"`
 	CloneURL         *string    `json:"clone_url,omitempty"`
