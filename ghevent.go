@@ -41,6 +41,10 @@ type TimeWrapper struct {
 }
 
 func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
+	if t, err := time.Parse("2006-01-02T15:04:05Z", string(data)); err == nil {
+		tw.Time = t
+		return nil
+	}
 	if t, err := time.Parse(time.RFC3339, string(data)); err == nil {
 		tw.Time = t
 		return nil
