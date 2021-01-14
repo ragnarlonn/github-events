@@ -25,6 +25,7 @@ package ghevent
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -50,6 +51,7 @@ func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 	if epochSecs, err := strconv.Atoi(string(data)); err != nil {
+		fmt.Printf("TimeWrapper: Failed to parse \"%s\"\n", string(data))
 		return errors.New("Failed to parse time as either seconds since Epoch, or RFC3339-style string")
 	} else {
 		tw.Time = time.Unix(int64(epochSecs), 0)
