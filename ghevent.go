@@ -4,6 +4,14 @@ package ghevent
 // This package tries to describe the Github REST API, to make JSON encoding/decoding
 // of Github data easier.
 //
+// - The goal is to include all *possible* fields in every object definition, even
+//   though Github doesn't always include all fields for an object it returns in
+//   response to an API call. I.e. the same type of object (e.g. the Repository
+//   object) may contain different fields depending on what API end point it was
+//   returned by. We actually try to model the Github *data structure* rather than
+//   the API responses. It is up to the user to verify that they got all the fields
+//   they needed in each response.
+//
 // - JSON fields used by the Github API will be CamelCase:d variables or types here
 //   (i.e. a field called "head_commit" will become a Golang struct field called "HeadCommit"
 //
@@ -22,19 +30,21 @@ import "time"
 //
 
 type PushEvent struct {
-	Ref        *string     `json:"ref,omitempty"`
-	Before     *string     `json:"before,omitempty"`
-	After      *string     `json:"after,omitempty"`
-	Created    *bool       `json:"created,omitempty"`
-	Deleted    *bool       `json:"deleted,omitempty"`
-	Forced     *bool       `json:"forced,omitempty"`
-	BaseRef    *string     `json:"base_ref,omitempty"`
-	Compare    *string     `json:"compare,omitempty"`
-	Commits    []Commit    `json:"commits,omitempty"`
-	HeadCommit *Commit     `json:"head_commit,omitempty"`
-	Repository *Repository `json:"repository,omitempty"`
-	Pusher     *EmailUser  `json:"pusher,omitempty"`
-	Sender     *Account    `json:"sender,omitempty"`
+	Ref          *string       `json:"ref,omitempty"`
+	Before       *string       `json:"before,omitempty"`
+	After        *string       `json:"after,omitempty"`
+	Created      *bool         `json:"created,omitempty"`
+	Deleted      *bool         `json:"deleted,omitempty"`
+	Forced       *bool         `json:"forced,omitempty"`
+	BaseRef      *string       `json:"base_ref,omitempty"`
+	Compare      *string       `json:"compare,omitempty"`
+	Commits      []Commit      `json:"commits,omitempty"`
+	HeadCommit   *Commit       `json:"head_commit,omitempty"`
+	Installation *Installation `json:"installation,omitempty"`
+	Organization *Account      `json:"organization,omitempty"`
+	Repository   *Repository   `json:"repository,omitempty"`
+	Pusher       *EmailUser    `json:"pusher,omitempty"`
+	Sender       *Account      `json:"sender,omitempty"`
 }
 
 type ForkEvent struct {
@@ -343,6 +353,7 @@ type Installation struct {
 	HasMultipleSingleFiles *bool             `json:"has_multiple_single_files,omitempty"`
 	HTMLURL                *string           `json:"html_url,omitempty"`
 	ID                     *int              `json:"id,omitempty"`
+	NodeID                 *string           `json:"node_id,omitempty"`
 	Permissions            map[string]string `json:"permissions,omitempty"`
 	RepositoriesURL        *string           `json:"repositories_url,omitempty"`
 	RepositorySelection    *string           `json:"repository_selection,omitempty"`
@@ -554,3 +565,208 @@ type TestStruct struct {
 	FloatSliceField  []float64 `json:"floatslice,omitempty"`
 	BoolSliceField   []bool    `json:"boolslice,omitempty"`
 }
+
+/*
+
+GHEventHandler: Got GHEvent request (X-Github-Event was "push")
+GHEventHandler: request body was: {
+   "after": "5aa9bdcf37e491356668c84e8c12b722063070ea",
+   "base_ref": null,
+   "before": "677a1c6abf3dcbd040a81762b7b9d3a869d5caa2",
+   "commits": [
+      {
+         "added": [],
+         "author": {
+            "email": "ragnar@lonn.org",
+            "name": "Ragnar Lonn",
+            "username": "ragnarlonn"
+         },
+         "committer": {
+            "email": "ragnar@lonn.org",
+            "name": "Ragnar Lonn",
+            "username": "ragnarlonn"
+         },
+         "distinct": true,
+         "id": "5aa9bdcf37e491356668c84e8c12b722063070ea",
+         "message": "Test commit",
+         "modified": [
+            "httpserver/database/relay.go"
+         ],
+         "removed": [],
+         "timestamp": "2021-01-14T07:35:08+01:00",
+         "tree_id": "fa2c871a795d610ce5589d060899d9123b7acb0b",
+         "url": "https://github.com/0ddParity/badgebot/commit/5aa9bdcf37e491356668c84e8c12b722063070ea"
+      }
+   ],
+   "compare": "https://github.com/0ddParity/badgebot/compare/677a1c6abf3d...5aa9bdcf37e4",
+   "created": false,
+   "deleted": false,
+   "forced": false,
+   "head_commit": {
+      "added": [],
+      "author": {
+         "email": "ragnar@lonn.org",
+         "name": "Ragnar Lonn",
+         "username": "ragnarlonn"
+      },
+      "committer": {
+         "email": "ragnar@lonn.org",
+         "name": "Ragnar Lonn",
+         "username": "ragnarlonn"
+      },
+      "distinct": true,
+      "id": "5aa9bdcf37e491356668c84e8c12b722063070ea",
+      "message": "Test commit",
+      "modified": [
+         "httpserver/database/relay.go"
+      ],
+      "removed": [],
+      "timestamp": "2021-01-14T07:35:08+01:00",
+      "tree_id": "fa2c871a795d610ce5589d060899d9123b7acb0b",
+      "url": "https://github.com/0ddParity/badgebot/commit/5aa9bdcf37e491356668c84e8c12b722063070ea"
+   },
+   "installation": {
+      "id": 14075073,
+      "node_id": "MDIzOkludGVncmF0aW9uSW5zdGFsbGF0aW9uMTQwNzUwNzM="
+   },
+   "organization": {
+      "avatar_url": "https://avatars2.githubusercontent.com/u/69793146?v=4",
+      "description": "Introducing odd code to the world since 2018",
+      "events_url": "https://api.github.com/orgs/0ddParity/events",
+      "hooks_url": "https://api.github.com/orgs/0ddParity/hooks",
+      "id": 69793146,
+      "issues_url": "https://api.github.com/orgs/0ddParity/issues",
+      "login": "0ddParity",
+      "members_url": "https://api.github.com/orgs/0ddParity/members{/member}",
+      "node_id": "MDEyOk9yZ2FuaXphdGlvbjY5NzkzMTQ2",
+      "public_members_url": "https://api.github.com/orgs/0ddParity/public_members{/member}",
+      "repos_url": "https://api.github.com/orgs/0ddParity/repos",
+      "url": "https://api.github.com/orgs/0ddParity"
+   },
+   "pusher": {
+      "email": "ragnar@lonn.org",
+      "name": "ragnarlonn"
+   },
+   "ref": "refs/heads/master",
+   "repository": {
+      "archive_url": "https://api.github.com/repos/0ddParity/badgebot/{archive_format}{/ref}",
+      "archived": false,
+      "assignees_url": "https://api.github.com/repos/0ddParity/badgebot/assignees{/user}",
+      "blobs_url": "https://api.github.com/repos/0ddParity/badgebot/git/blobs{/sha}",
+      "branches_url": "https://api.github.com/repos/0ddParity/badgebot/branches{/branch}",
+      "clone_url": "https://github.com/0ddParity/badgebot.git",
+      "collaborators_url": "https://api.github.com/repos/0ddParity/badgebot/collaborators{/collaborator}",
+      "comments_url": "https://api.github.com/repos/0ddParity/badgebot/comments{/number}",
+      "commits_url": "https://api.github.com/repos/0ddParity/badgebot/commits{/sha}",
+      "compare_url": "https://api.github.com/repos/0ddParity/badgebot/compare/{base}...{head}",
+      "contents_url": "https://api.github.com/repos/0ddParity/badgebot/contents/{+path}",
+      "contributors_url": "https://api.github.com/repos/0ddParity/badgebot/contributors",
+      "created_at": 1597749125,
+      "default_branch": "master",
+      "deployments_url": "https://api.github.com/repos/0ddParity/badgebot/deployments",
+      "description": "Create badges for your repo",
+      "disabled": false,
+      "downloads_url": "https://api.github.com/repos/0ddParity/badgebot/downloads",
+      "events_url": "https://api.github.com/repos/0ddParity/badgebot/events",
+      "fork": false,
+      "forks": 0,
+      "forks_count": 0,
+      "forks_url": "https://api.github.com/repos/0ddParity/badgebot/forks",
+      "full_name": "0ddParity/badgebot",
+      "git_commits_url": "https://api.github.com/repos/0ddParity/badgebot/git/commits{/sha}",
+      "git_refs_url": "https://api.github.com/repos/0ddParity/badgebot/git/refs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/0ddParity/badgebot/git/tags{/sha}",
+      "git_url": "git://github.com/0ddParity/badgebot.git",
+      "has_downloads": true,
+      "has_issues": true,
+      "has_pages": false,
+      "has_projects": true,
+      "has_wiki": true,
+      "homepage": null,
+      "hooks_url": "https://api.github.com/repos/0ddParity/badgebot/hooks",
+      "html_url": "https://github.com/0ddParity/badgebot",
+      "id": 288433559,
+      "issue_comment_url": "https://api.github.com/repos/0ddParity/badgebot/issues/comments{/number}",
+      "issue_events_url": "https://api.github.com/repos/0ddParity/badgebot/issues/events{/number}",
+      "issues_url": "https://api.github.com/repos/0ddParity/badgebot/issues{/number}",
+      "keys_url": "https://api.github.com/repos/0ddParity/badgebot/keys{/key_id}",
+      "labels_url": "https://api.github.com/repos/0ddParity/badgebot/labels{/name}",
+      "language": "Go",
+      "languages_url": "https://api.github.com/repos/0ddParity/badgebot/languages",
+      "license": null,
+      "master_branch": "master",
+      "merges_url": "https://api.github.com/repos/0ddParity/badgebot/merges",
+      "milestones_url": "https://api.github.com/repos/0ddParity/badgebot/milestones{/number}",
+      "mirror_url": null,
+      "name": "badgebot",
+      "node_id": "MDEwOlJlcG9zaXRvcnkyODg0MzM1NTk=",
+      "notifications_url": "https://api.github.com/repos/0ddParity/badgebot/notifications{?since,all,participating}",
+      "open_issues": 3,
+      "open_issues_count": 3,
+      "organization": "0ddParity",
+      "owner": {
+         "avatar_url": "https://avatars2.githubusercontent.com/u/69793146?v=4",
+         "email": null,
+         "events_url": "https://api.github.com/users/0ddParity/events{/privacy}",
+         "followers_url": "https://api.github.com/users/0ddParity/followers",
+         "following_url": "https://api.github.com/users/0ddParity/following{/other_user}",
+         "gists_url": "https://api.github.com/users/0ddParity/gists{/gist_id}",
+         "gravatar_id": "",
+         "html_url": "https://github.com/0ddParity",
+         "id": 69793146,
+         "login": "0ddParity",
+         "name": "0ddParity",
+         "node_id": "MDEyOk9yZ2FuaXphdGlvbjY5NzkzMTQ2",
+         "organizations_url": "https://api.github.com/users/0ddParity/orgs",
+         "received_events_url": "https://api.github.com/users/0ddParity/received_events",
+         "repos_url": "https://api.github.com/users/0ddParity/repos",
+         "site_admin": false,
+         "starred_url": "https://api.github.com/users/0ddParity/starred{/owner}{/repo}",
+         "subscriptions_url": "https://api.github.com/users/0ddParity/subscriptions",
+         "type": "Organization",
+         "url": "https://api.github.com/users/0ddParity"
+      },
+      "private": true,
+      "pulls_url": "https://api.github.com/repos/0ddParity/badgebot/pulls{/number}",
+      "pushed_at": 1610606114,
+      "releases_url": "https://api.github.com/repos/0ddParity/badgebot/releases{/id}",
+      "size": 2128,
+      "ssh_url": "git@github.com:0ddParity/badgebot.git",
+      "stargazers": 0,
+      "stargazers_count": 0,
+      "stargazers_url": "https://api.github.com/repos/0ddParity/badgebot/stargazers",
+      "statuses_url": "https://api.github.com/repos/0ddParity/badgebot/statuses/{sha}",
+      "subscribers_url": "https://api.github.com/repos/0ddParity/badgebot/subscribers",
+      "subscription_url": "https://api.github.com/repos/0ddParity/badgebot/subscription",
+      "svn_url": "https://github.com/0ddParity/badgebot",
+      "tags_url": "https://api.github.com/repos/0ddParity/badgebot/tags",
+      "teams_url": "https://api.github.com/repos/0ddParity/badgebot/teams",
+      "trees_url": "https://api.github.com/repos/0ddParity/badgebot/git/trees{/sha}",
+      "updated_at": "2021-01-13T15:23:23Z",
+      "url": "https://github.com/0ddParity/badgebot",
+      "watchers": 0,
+      "watchers_count": 0
+   },
+   "sender": {
+      "avatar_url": "https://avatars2.githubusercontent.com/u/6524809?v=4",
+      "events_url": "https://api.github.com/users/ragnarlonn/events{/privacy}",
+      "followers_url": "https://api.github.com/users/ragnarlonn/followers",
+      "following_url": "https://api.github.com/users/ragnarlonn/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ragnarlonn/gists{/gist_id}",
+      "gravatar_id": "",
+      "html_url": "https://github.com/ragnarlonn",
+      "id": 6524809,
+      "login": "ragnarlonn",
+      "node_id": "MDQ6VXNlcjY1MjQ4MDk=",
+      "organizations_url": "https://api.github.com/users/ragnarlonn/orgs",
+      "received_events_url": "https://api.github.com/users/ragnarlonn/received_events",
+      "repos_url": "https://api.github.com/users/ragnarlonn/repos",
+      "site_admin": false,
+      "starred_url": "https://api.github.com/users/ragnarlonn/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ragnarlonn/subscriptions",
+      "type": "User",
+      "url": "https://api.github.com/users/ragnarlonn"
+   }
+}
+
+*/
