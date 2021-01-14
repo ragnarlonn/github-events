@@ -23,7 +23,35 @@ package ghevent
 //   all struct fields have an "omitempty" in their struct tags
 //
 
-import "time"
+import (
+	"errors"
+	"strconv"
+	"time"
+)
+
+//
+// Data wrappers for inconsistencies in the Github API
+//
+
+//
+// Sometimes timestamps are integers (Unix epoch timestamps) and sometimes they're RFC3339. Sigh.
+//
+type TimeWrapper struct {
+	Time time.Time
+}
+
+func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
+	if t, err := time.Parse(time.RFC3339, string(data)); err == nil {
+		tw.Time = t
+		return nil
+	}
+	if epochSecs, err := strconv.Atoi(string(data)); err != nil {
+		return errors.New("Failed to parse time as either seconds since Epoch, or RFC3339-style string")
+	} else {
+		tw.Time = time.Unix(int64(epochSecs), 0)
+		return nil
+	}
+}
 
 //
 // Events
@@ -106,16 +134,16 @@ type InstallationRepositoriesEvent struct {
 //
 
 type IssueComment struct {
-	URL               *string    `json:"url,omitempty"`
-	HTMLURL           *string    `json:"html_url,omitempty"`
-	IssueURL          *string    `json:"issue_url,omitempty"`
-	ID                *int       `json:"id,omitempty"`
-	NodeID            *string    `json:"node_id,omitempty"`
-	User              *Account   `json:"user,omitempty"`
-	CreatedAt         *time.Time `json:"created_at,omitempty"`
-	UpdatedAt         *time.Time `json:"updated_at,omitempty"`
-	AuthorAssociation *string    `json:"author_association,omitempty"`
-	Body              *string    `json:"body,omitempty"`
+	URL               *string      `json:"url,omitempty"`
+	HTMLURL           *string      `json:"html_url,omitempty"`
+	IssueURL          *string      `json:"issue_url,omitempty"`
+	ID                *int         `json:"id,omitempty"`
+	NodeID            *string      `json:"node_id,omitempty"`
+	User              *Account     `json:"user,omitempty"`
+	CreatedAt         *TimeWrapper `json:"created_at,omitempty"`
+	UpdatedAt         *TimeWrapper `json:"updated_at,omitempty"`
+	AuthorAssociation *string      `json:"author_association,omitempty"`
+	Body              *string      `json:"body,omitempty"`
 }
 
 type Issue struct {
@@ -140,9 +168,9 @@ type Issue struct {
 	ActiveLockReason *string           `json:"active_lock_reason,omitempty"`
 	Comments         *int              `json:"comments,omitempty"`
 	PullRequest      *IssuePullRequest `json:"pull_request,omitempty"`
-	ClosedAt         *time.Time        `json:"closed_at,omitempty"`
-	CreatedAt        *time.Time        `json:"created_at,omitempty"`
-	UpdatedAt        *time.Time        `json:"updated_at,omitempty"`
+	ClosedAt         *TimeWrapper      `json:"closed_at,omitempty"`
+	CreatedAt        *TimeWrapper      `json:"created_at,omitempty"`
+	UpdatedAt        *TimeWrapper      `json:"updated_at,omitempty"`
 	ClosedBy         *Account          `json:"closed_by,omitempty"`
 }
 
@@ -164,100 +192,100 @@ type Label struct {
 }
 
 type Milestone struct {
-	URL          *string    `json:"url,omitempty"`
-	HTMLURL      *string    `json:"html_url,omitempty"`
-	LabelsURL    *string    `json:"labels_url,omitempty"`
-	ID           *int       `json:"id,omitempty"`
-	NodeID       *string    `json:"node_id,omitempty"`
-	Number       *int       `json:"number,omitempty"`
-	State        *string    `json:"state,omitempty"`
-	Title        *string    `json:"title,omitempty"`
-	Description  *string    `json:"description,omitempty"`
-	Creator      *Account   `json:"creator,omitempty"`
-	OpenIssues   *int       `json:"open_issues,omitempty"`
-	ClosedIssues *int       `json:"closed_issues,omitempty"`
-	CreatedAt    *time.Time `json:"created_at,omitempty"`
-	UpdatedAt    *time.Time `json:"updated_at,omitempty"`
-	ClosedAt     *time.Time `json:"closed_at,omitempty"`
-	DueOn        *time.Time `json:"due_on,omitempty"`
+	URL          *string      `json:"url,omitempty"`
+	HTMLURL      *string      `json:"html_url,omitempty"`
+	LabelsURL    *string      `json:"labels_url,omitempty"`
+	ID           *int         `json:"id,omitempty"`
+	NodeID       *string      `json:"node_id,omitempty"`
+	Number       *int         `json:"number,omitempty"`
+	State        *string      `json:"state,omitempty"`
+	Title        *string      `json:"title,omitempty"`
+	Description  *string      `json:"description,omitempty"`
+	Creator      *Account     `json:"creator,omitempty"`
+	OpenIssues   *int         `json:"open_issues,omitempty"`
+	ClosedIssues *int         `json:"closed_issues,omitempty"`
+	CreatedAt    *TimeWrapper `json:"created_at,omitempty"`
+	UpdatedAt    *TimeWrapper `json:"updated_at,omitempty"`
+	ClosedAt     *TimeWrapper `json:"closed_at,omitempty"`
+	DueOn        *TimeWrapper `json:"due_on,omitempty"`
 }
 
 type Repository struct {
-	ID               *int       `json:"id,omitempty"`
-	NodeID           *string    `json:"node_id,omitempty"`
-	Name             *string    `json:"name,omitempty"`
-	FullName         *string    `json:"full_name,omitempty"`
-	Private          *bool      `json:"private,omitempty"`
-	Owner            *Account   `json:"owner,omitempty"`
-	HTMLURL          *string    `json:"html_url,omitempty"`
-	Description      *string    `json:"description,omitempty"`
-	Fork             *bool      `json:"fork,omitempty"`
-	URL              *string    `json:"url,omitempty"`
-	ForksURL         *string    `json:"forks_url,omitempty"`
-	KeysURL          *string    `json:"keys_url,omitempty"`
-	CollaboratorsURL *string    `json:"collaborators_url,omitempty"`
-	TeamsURL         *string    `json:"teams_url,omitempty"`
-	HooksURL         *string    `json:"hooks_url,omitempty"`
-	IssueEventsURL   *string    `json:"issue_events_url,omitempty"`
-	EventsURL        *string    `json:"events_url,omitempty"`
-	AssigneesURL     *string    `json:"assignees_url,omitempty"`
-	BranchesURL      *string    `json:"branches_url,omitempty"`
-	TagsURL          *string    `json:"tags_url,omitempty"`
-	BlobsURL         *string    `json:"blobs_url,omitempty"`
-	GitTagsURL       *string    `json:"git_tags_url,omitempty"`
-	GitRefsURL       *string    `json:"git_refs_url,omitempty"`
-	TreesURL         *string    `json:"trees_url,omitempty"`
-	StatusesURL      *string    `json:"statuses_url,omitempty"`
-	LanguagesURL     *string    `json:"languages_url,omitempty"`
-	StargazersURL    *string    `json:"stargazers_url,omitempty"`
-	ContributorsURL  *string    `json:"contributors_url,omitempty"`
-	SubscribersURL   *string    `json:"subscribers_url,omitempty"`
-	SubscriptionURL  *string    `json:"subscription_url,omitempty"`
-	CommitsURL       *string    `json:"commits_url,omitempty"`
-	GitCommitsURL    *string    `json:"git_commits_url,omitempty"`
-	CommentsURL      *string    `json:"comments_url,omitempty"`
-	IssueCommentsURL *string    `json:"issue_comment_url,omitempty"`
-	ContentsURL      *string    `json:"contents_url,omitempty"`
-	CompareURL       *string    `json:"compare_url,omitempty"`
-	MergesURL        *string    `json:"merges_url,omitempty"`
-	ArchiveURL       *string    `json:"archive_url,omitempty"`
-	DownloadsURL     *string    `json:"downloads_url,omitempty"`
-	IssuesURL        *string    `json:"issues_url,omitempty"`
-	PullsURL         *string    `json:"pulls_url,omitempty"`
-	MilestonesURL    *string    `json:"milestones_url,omitempty"`
-	NotificationURL  *string    `json:"notifications_url,omitempty"`
-	LabelsURL        *string    `json:"labels_url,omitempty"`
-	ReleasesURL      *string    `json:"releases_url,omitempty"`
-	DeploymentsURL   *string    `json:"deployments_url,omitempty"`
-	CreatedAt        *time.Time `json:"created_at,omitempty"`
-	UpdatedAt        *time.Time `json:"updated_at,omitempty"`
-	PushedAt         *time.Time `json:"pushed_at,omitempty"`
-	GitURL           *string    `json:"git_url,omitempty"`
-	SSHURL           *string    `json:"ssh_url,omitempty"`
-	CloneURL         *string    `json:"clone_url,omitempty"`
-	SvnURL           *string    `json:"svn_url,omitempty"`
-	Homepage         *string    `json:"homepage,omitempty"`
-	Size             *int       `json:"size,omitempty"`
-	StargazersCount  *int       `json:"stargazers_count,omitempty"`
-	WatchersCount    *int       `json:"watchers_count,omitempty"`
-	Languages        *string    `json:"language,omitempty"`
-	HasIssues        *bool      `json:"has_issues,omitempty"`
-	HasProjects      *bool      `json:"has_projects,omitempty"`
-	HasDownloads     *bool      `json:"has_downloads,omitempty"`
-	HasWiki          *bool      `json:"has_wiki,omitempty"`
-	HasPages         *bool      `json:"has_pages,omitempty"`
-	ForksCount       *int       `json:"forks_count,omitempty"`
-	MirrorURL        *string    `json:"mirror_url,omitempty"`
-	Archived         *bool      `json:"archived,omitempty"`
-	Disabled         *bool      `json:"disabled,omitempty"`
-	OpenIssuesCount  *int       `json:"open_issues_count,omitempty"`
-	License          *string    `json:"license,omitempty"`
-	Forks            *int       `json:"forks,omitempty"`
-	OpenIssues       *int       `json:"open_issues,omitempty"`
-	Watchers         *int       `json:"watchers,omitempty"`
-	DefaultBranch    *string    `json:"default_branch,omitempty"`
-	Stargazers       *int       `json:"stargazers,omitempty"`
-	MasterBranch     *string    `json:"master_branch,omitempty"`
+	ID               *int         `json:"id,omitempty"`
+	NodeID           *string      `json:"node_id,omitempty"`
+	Name             *string      `json:"name,omitempty"`
+	FullName         *string      `json:"full_name,omitempty"`
+	Private          *bool        `json:"private,omitempty"`
+	Owner            *Account     `json:"owner,omitempty"`
+	HTMLURL          *string      `json:"html_url,omitempty"`
+	Description      *string      `json:"description,omitempty"`
+	Fork             *bool        `json:"fork,omitempty"`
+	URL              *string      `json:"url,omitempty"`
+	ForksURL         *string      `json:"forks_url,omitempty"`
+	KeysURL          *string      `json:"keys_url,omitempty"`
+	CollaboratorsURL *string      `json:"collaborators_url,omitempty"`
+	TeamsURL         *string      `json:"teams_url,omitempty"`
+	HooksURL         *string      `json:"hooks_url,omitempty"`
+	IssueEventsURL   *string      `json:"issue_events_url,omitempty"`
+	EventsURL        *string      `json:"events_url,omitempty"`
+	AssigneesURL     *string      `json:"assignees_url,omitempty"`
+	BranchesURL      *string      `json:"branches_url,omitempty"`
+	TagsURL          *string      `json:"tags_url,omitempty"`
+	BlobsURL         *string      `json:"blobs_url,omitempty"`
+	GitTagsURL       *string      `json:"git_tags_url,omitempty"`
+	GitRefsURL       *string      `json:"git_refs_url,omitempty"`
+	TreesURL         *string      `json:"trees_url,omitempty"`
+	StatusesURL      *string      `json:"statuses_url,omitempty"`
+	LanguagesURL     *string      `json:"languages_url,omitempty"`
+	StargazersURL    *string      `json:"stargazers_url,omitempty"`
+	ContributorsURL  *string      `json:"contributors_url,omitempty"`
+	SubscribersURL   *string      `json:"subscribers_url,omitempty"`
+	SubscriptionURL  *string      `json:"subscription_url,omitempty"`
+	CommitsURL       *string      `json:"commits_url,omitempty"`
+	GitCommitsURL    *string      `json:"git_commits_url,omitempty"`
+	CommentsURL      *string      `json:"comments_url,omitempty"`
+	IssueCommentsURL *string      `json:"issue_comment_url,omitempty"`
+	ContentsURL      *string      `json:"contents_url,omitempty"`
+	CompareURL       *string      `json:"compare_url,omitempty"`
+	MergesURL        *string      `json:"merges_url,omitempty"`
+	ArchiveURL       *string      `json:"archive_url,omitempty"`
+	DownloadsURL     *string      `json:"downloads_url,omitempty"`
+	IssuesURL        *string      `json:"issues_url,omitempty"`
+	PullsURL         *string      `json:"pulls_url,omitempty"`
+	MilestonesURL    *string      `json:"milestones_url,omitempty"`
+	NotificationURL  *string      `json:"notifications_url,omitempty"`
+	LabelsURL        *string      `json:"labels_url,omitempty"`
+	ReleasesURL      *string      `json:"releases_url,omitempty"`
+	DeploymentsURL   *string      `json:"deployments_url,omitempty"`
+	CreatedAt        *TimeWrapper `json:"created_at,omitempty"`
+	UpdatedAt        *TimeWrapper `json:"updated_at,omitempty"`
+	PushedAt         *TimeWrapper `json:"pushed_at,omitempty"`
+	GitURL           *string      `json:"git_url,omitempty"`
+	SSHURL           *string      `json:"ssh_url,omitempty"`
+	CloneURL         *string      `json:"clone_url,omitempty"`
+	SvnURL           *string      `json:"svn_url,omitempty"`
+	Homepage         *string      `json:"homepage,omitempty"`
+	Size             *int         `json:"size,omitempty"`
+	StargazersCount  *int         `json:"stargazers_count,omitempty"`
+	WatchersCount    *int         `json:"watchers_count,omitempty"`
+	Languages        *string      `json:"language,omitempty"`
+	HasIssues        *bool        `json:"has_issues,omitempty"`
+	HasProjects      *bool        `json:"has_projects,omitempty"`
+	HasDownloads     *bool        `json:"has_downloads,omitempty"`
+	HasWiki          *bool        `json:"has_wiki,omitempty"`
+	HasPages         *bool        `json:"has_pages,omitempty"`
+	ForksCount       *int         `json:"forks_count,omitempty"`
+	MirrorURL        *string      `json:"mirror_url,omitempty"`
+	Archived         *bool        `json:"archived,omitempty"`
+	Disabled         *bool        `json:"disabled,omitempty"`
+	OpenIssuesCount  *int         `json:"open_issues_count,omitempty"`
+	License          *string      `json:"license,omitempty"`
+	Forks            *int         `json:"forks,omitempty"`
+	OpenIssues       *int         `json:"open_issues,omitempty"`
+	Watchers         *int         `json:"watchers,omitempty"`
+	DefaultBranch    *string      `json:"default_branch,omitempty"`
+	Stargazers       *int         `json:"stargazers,omitempty"`
+	MasterBranch     *string      `json:"master_branch,omitempty"`
 }
 
 type Account struct {
@@ -291,17 +319,17 @@ type Account struct {
 	PublicGists              *int                      `json:"public_gists,omitempty"`
 	Followers                *int                      `json:"followers,omitempty"`
 	Following                *int                      `json:"following,omitempty"`
-	CreatedAt                *time.Time                `json:"created_at,omitempty"`
-	UpdatedAt                *time.Time                `json:"updated_at,omitempty"`
+	CreatedAt                *TimeWrapper              `json:"created_at,omitempty"`
+	UpdatedAt                *TimeWrapper              `json:"updated_at,omitempty"`
 	OrganizationBillingEmail *string                   `json:"organization_billing_email,omitempty"`
 	MarketplacePendingChange *MarketplacePendingChange `json:"marketplace_pending_change,omitempty"`
 	MarketplacePurchase      *MarketplacePurchase      `json:"marketplace_purchase,omitempty"`
 }
 
 type CommitUser struct {
-	Email *string    `json:"email,omitempty"`
-	Name  *string    `json:"name,omitempty"`
-	Date  *time.Time `json:"date,omitempty"`
+	Email *string      `json:"email,omitempty"`
+	Name  *string      `json:"name,omitempty"`
+	Date  *TimeWrapper `json:"date,omitempty"`
 }
 
 type EmailUser struct {
@@ -348,7 +376,7 @@ type Installation struct {
 	Account                *Account          `json:"account,omitempty"`
 	AppID                  *int              `json:"app_id,omitempty"`
 	AppSlug                *string           `json:"app_slug,omitempty"`
-	CreatedAt              *time.Time        `json:"created_at,omitempty"`
+	CreatedAt              *TimeWrapper      `json:"created_at,omitempty"`
 	Events                 []string          `json:"events,omitempty"`
 	HasMultipleSingleFiles *bool             `json:"has_multiple_single_files,omitempty"`
 	HTMLURL                *string           `json:"html_url,omitempty"`
@@ -359,11 +387,11 @@ type Installation struct {
 	RepositorySelection    *string           `json:"repository_selection,omitempty"`
 	SingleFileName         *string           `json:"single_file_name,omitempty"`
 	SingleFilePaths        []string          `json:"single_file_paths,omitempty"`
-	SuspendedAt            *time.Time        `json:"suspended_at,omitempty"`
+	SuspendedAt            *TimeWrapper      `json:"suspended_at,omitempty"`
 	SuspendedBy            *string           `json:"suspended_by,omitempty"`
 	TargetID               *int              `json:"target_id,omitempty"`
 	TargetType             *string           `json:"target_type,omitempty"`
-	UpdatedAt              *time.Time        `json:"updated_at,omitempty"`
+	UpdatedAt              *TimeWrapper      `json:"updated_at,omitempty"`
 }
 
 type Plan struct {
@@ -383,20 +411,20 @@ type Plan struct {
 }
 
 type MarketplacePendingChange struct {
-	EffectiveDate *time.Time `json:"effective_date,omitempty"`
-	UnitCount     *int       `json:"unit_count,omitempty"`
-	ID            *int       `json:"id,omitempty"`
-	Plan          *Plan      `json:"plan,omitempty"`
+	EffectiveDate *TimeWrapper `json:"effective_date,omitempty"`
+	UnitCount     *int         `json:"unit_count,omitempty"`
+	ID            *int         `json:"id,omitempty"`
+	Plan          *Plan        `json:"plan,omitempty"`
 }
 
 type MarketplacePurchase struct {
-	BillingCycle    *string    `json:"billing_cycle,omitempty"`
-	NextBillingDate *time.Time `json:"next_billing_date"`
-	UnitCount       *int       `json:"unit_count,omitempty"`
-	OnFreeTrial     *bool      `json:"on_free_trial,omitempty"`
-	FreeTrialEndsOn *time.Time `json:"free_trial_ends_on,omitempty"`
-	UpdatedAt       *time.Time `json:"updated_at,omitempty"`
-	Plan            *Plan      `json:"plan,omitempty"`
+	BillingCycle    *string      `json:"billing_cycle,omitempty"`
+	NextBillingDate *TimeWrapper `json:"next_billing_date"`
+	UnitCount       *int         `json:"unit_count,omitempty"`
+	OnFreeTrial     *bool        `json:"on_free_trial,omitempty"`
+	FreeTrialEndsOn *TimeWrapper `json:"free_trial_ends_on,omitempty"`
+	UpdatedAt       *TimeWrapper `json:"updated_at,omitempty"`
+	Plan            *Plan        `json:"plan,omitempty"`
 }
 
 type PullRequest struct {
