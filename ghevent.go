@@ -42,19 +42,14 @@ type TimeWrapper struct {
 }
 
 func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
-	if t, err := time.Parse("2006-01-02T15:04:05Z", string(data)); err == nil {
-		tw.Time = t
+	if err := tw.Time.UnmarshalJSON(data); err == nil {
 		return nil
 	}
-	if t, err := time.Parse(time.RFC3339, string(data)); err == nil {
-		tw.Time = t
-		return nil
-	}
-	if epochSecs, err := strconv.Atoi(string(data)); err != nil {
+	if epochSecs, err := strconv.ParseInt(string(data), 10, 64); err != nil {
 		fmt.Printf("TimeWrapper: Failed to parse \"%s\"\n", string(data))
 		return errors.New("Failed to parse time as either seconds since Epoch, or RFC3339-style string")
 	} else {
-		tw.Time = time.Unix(int64(epochSecs), 0)
+		tw.Time = time.Unix(epochSecs, 0)
 		return nil
 	}
 }
