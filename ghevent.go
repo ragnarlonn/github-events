@@ -38,20 +38,26 @@ import (
 // Sometimes timestamps are integers (Unix epoch timestamps) and sometimes they're RFC3339. Sigh.
 //
 type TimeWrapper struct {
-	Time time.Time
+	t time.Time
 }
 
 func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
-	if err := tw.Time.UnmarshalJSON(data); err == nil {
+	if err := tw.t.UnmarshalJSON(data); err == nil {
 		return nil
 	}
 	if epochSecs, err := strconv.ParseInt(string(data), 10, 64); err != nil {
 		fmt.Printf("TimeWrapper: Failed to parse \"%s\"\n", string(data))
 		return errors.New("Failed to parse time as either seconds since Epoch, or RFC3339-style string")
 	} else {
-		tw.Time = time.Unix(epochSecs, 0)
+		tw.t = time.Unix(epochSecs, 0)
 		return nil
 	}
+}
+func (tw *TimeWrapper) MarshalJSON() ([]byte, error) {
+	return tw.t.MarshalJSON()
+}
+func (tw *TimeWrapper) Time() time.Time {
+	return tw.t
 }
 
 //
@@ -211,6 +217,14 @@ type Milestone struct {
 	DueOn        *TimeWrapper `json:"due_on,omitempty"`
 }
 
+type License struct {
+	Key    *string `json:"key,omitempty"`
+	Name   *string `json:"name,omitempty"`
+	SpdxID *string `json:"spdx_id,omitempty"`
+	URL    *string `json:"url,omitempty"`
+	NodeID *string `json:"node_id,omitempty"`
+}
+
 type Repository struct {
 	ID               *int         `json:"id,omitempty"`
 	NodeID           *string      `json:"node_id,omitempty"`
@@ -280,7 +294,7 @@ type Repository struct {
 	Archived         *bool        `json:"archived,omitempty"`
 	Disabled         *bool        `json:"disabled,omitempty"`
 	OpenIssuesCount  *int         `json:"open_issues_count,omitempty"`
-	License          *string      `json:"license,omitempty"`
+	License          *License     `json:"license,omitempty"`
 	Forks            *int         `json:"forks,omitempty"`
 	OpenIssues       *int         `json:"open_issues,omitempty"`
 	Watchers         *int         `json:"watchers,omitempty"`
