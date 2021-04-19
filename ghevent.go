@@ -28,6 +28,7 @@ import (
 	"fmt"
 	"strconv"
 	"time"
+   "strings"
 )
 
 //
@@ -42,16 +43,17 @@ type TimeWrapper struct {
 }
 
 func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
-	if t, err := time.Parse("2006-01-02T15:04:05Z", string(data)); err == nil {
+   s := strings.Trim(string(data), `"`)
+	if t, err := time.Parse("2006-01-02T15:04:05Z", s); err == nil {
 		tw.t = t
 		return nil
 	}
-	if t, err := time.Parse(time.RFC3339, string(data)); err == nil {
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
 		tw.t = t
 		return nil
 	}
-	if epochSecs, err := strconv.Atoi(string(data)); err != nil {
-		return errors.New(fmt.Sprintf("Failed to parse time \"%s\" as either seconds since Epoch, or RFC3339-style string", string(data)))
+	if epochSecs, err := strconv.Atoi(s); err != nil {
+		return errors.New(fmt.Sprintf("Failed to parse time \"%s\" as either seconds since Epoch, or RFC3339-style string", s))
 	} else {
 		tw.t = time.Unix(int64(epochSecs), 0)
 		return nil
