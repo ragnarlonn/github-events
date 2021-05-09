@@ -27,8 +27,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
-   "strings"
 )
 
 //
@@ -43,7 +43,7 @@ type TimeWrapper struct {
 }
 
 func (tw *TimeWrapper) UnmarshalJSON(data []byte) error {
-   s := strings.Trim(string(data), `"`)
+	s := strings.Trim(string(data), `"`)
 	if t, err := time.Parse("2006-01-02T15:04:05Z", s); err == nil {
 		tw.t = t
 		return nil
@@ -150,7 +150,7 @@ type IssueComment struct {
 	URL               *string      `json:"url,omitempty"`
 	HTMLURL           *string      `json:"html_url,omitempty"`
 	IssueURL          *string      `json:"issue_url,omitempty"`
-	ID                *int         `json:"id,omitempty"`
+	ID                *uint32      `json:"id,omitempty"`
 	NodeID            *string      `json:"node_id,omitempty"`
 	User              *Account     `json:"user,omitempty"`
 	CreatedAt         *TimeWrapper `json:"created_at,omitempty"`
@@ -160,7 +160,7 @@ type IssueComment struct {
 }
 
 type Issue struct {
-	ID               *int              `json:"id,omitempty"`
+	ID               *uint32           `json:"id,omitempty"`
 	NodeID           *string           `json:"node_id,omitempty"`
 	URL              *string           `json:"url,omitempty"`
 	RepositoryURL    *string           `json:"repository_url,omitempty"`
@@ -168,7 +168,7 @@ type Issue struct {
 	CommentsURL      *string           `json:"comments_url,omitempty"`
 	EventsURL        *string           `json:"events_url,omitempty"`
 	HTMLURL          *string           `json:"html_url,omitempty"`
-	Number           *int              `json:"number,omitempty"`
+	Number           *uint32           `json:"number,omitempty"`
 	State            *string           `json:"state,omitempty"`
 	Title            *string           `json:"title,omitempty"`
 	Body             *string           `json:"body,omitempty"`
@@ -179,7 +179,7 @@ type Issue struct {
 	Milestone        *Milestone        `json:"milestone,omitempty"`
 	Locked           *bool             `json:"locked,omitempty"`
 	ActiveLockReason *string           `json:"active_lock_reason,omitempty"`
-	Comments         *int              `json:"comments,omitempty"`
+	Comments         *uint32           `json:"comments,omitempty"`
 	PullRequest      *IssuePullRequest `json:"pull_request,omitempty"`
 	ClosedAt         *TimeWrapper      `json:"closed_at,omitempty"`
 	CreatedAt        *TimeWrapper      `json:"created_at,omitempty"`
@@ -195,7 +195,7 @@ type IssuePullRequest struct {
 }
 
 type Label struct {
-	ID          *int    `json:"id,omitempty"`
+	ID          *uint32 `json:"id,omitempty"`
 	NodeID      *string `json:"node_id,omitempty"`
 	URL         *string `json:"url,omitempty"`
 	Name        *string `json:"name,omitempty"`
@@ -208,15 +208,15 @@ type Milestone struct {
 	URL          *string      `json:"url,omitempty"`
 	HTMLURL      *string      `json:"html_url,omitempty"`
 	LabelsURL    *string      `json:"labels_url,omitempty"`
-	ID           *int         `json:"id,omitempty"`
+	ID           *uint32      `json:"id,omitempty"`
 	NodeID       *string      `json:"node_id,omitempty"`
-	Number       *int         `json:"number,omitempty"`
+	Number       *uint32      `json:"number,omitempty"`
 	State        *string      `json:"state,omitempty"`
 	Title        *string      `json:"title,omitempty"`
 	Description  *string      `json:"description,omitempty"`
 	Creator      *Account     `json:"creator,omitempty"`
-	OpenIssues   *int         `json:"open_issues,omitempty"`
-	ClosedIssues *int         `json:"closed_issues,omitempty"`
+	OpenIssues   *uint32      `json:"open_issues,omitempty"`
+	ClosedIssues *uint32      `json:"closed_issues,omitempty"`
 	CreatedAt    *TimeWrapper `json:"created_at,omitempty"`
 	UpdatedAt    *TimeWrapper `json:"updated_at,omitempty"`
 	ClosedAt     *TimeWrapper `json:"closed_at,omitempty"`
@@ -232,7 +232,7 @@ type License struct {
 }
 
 type Repository struct {
-	ID               *int         `json:"id,omitempty"`
+	ID               *uint32      `json:"id,omitempty"`
 	NodeID           *string      `json:"node_id,omitempty"`
 	Name             *string      `json:"name,omitempty"`
 	FullName         *string      `json:"full_name,omitempty"`
@@ -286,32 +286,32 @@ type Repository struct {
 	CloneURL         *string      `json:"clone_url,omitempty"`
 	SvnURL           *string      `json:"svn_url,omitempty"`
 	Homepage         *string      `json:"homepage,omitempty"`
-	Size             *int         `json:"size,omitempty"`
-	StargazersCount  *int         `json:"stargazers_count,omitempty"`
-	WatchersCount    *int         `json:"watchers_count,omitempty"`
+	Size             *uint32      `json:"size,omitempty"`
+	StargazersCount  *uint32      `json:"stargazers_count,omitempty"`
+	WatchersCount    *uint32      `json:"watchers_count,omitempty"`
 	Languages        *string      `json:"language,omitempty"`
 	HasIssues        *bool        `json:"has_issues,omitempty"`
 	HasProjects      *bool        `json:"has_projects,omitempty"`
 	HasDownloads     *bool        `json:"has_downloads,omitempty"`
 	HasWiki          *bool        `json:"has_wiki,omitempty"`
 	HasPages         *bool        `json:"has_pages,omitempty"`
-	ForksCount       *int         `json:"forks_count,omitempty"`
+	ForksCount       *uint32      `json:"forks_count,omitempty"`
 	MirrorURL        *string      `json:"mirror_url,omitempty"`
 	Archived         *bool        `json:"archived,omitempty"`
 	Disabled         *bool        `json:"disabled,omitempty"`
-	OpenIssuesCount  *int         `json:"open_issues_count,omitempty"`
+	OpenIssuesCount  *uint32      `json:"open_issues_count,omitempty"`
 	License          *License     `json:"license,omitempty"`
-	Forks            *int         `json:"forks,omitempty"`
-	OpenIssues       *int         `json:"open_issues,omitempty"`
-	Watchers         *int         `json:"watchers,omitempty"`
+	Forks            *uint32      `json:"forks,omitempty"`
+	OpenIssues       *uint32      `json:"open_issues,omitempty"`
+	Watchers         *uint32      `json:"watchers,omitempty"`
 	DefaultBranch    *string      `json:"default_branch,omitempty"`
-	Stargazers       *int         `json:"stargazers,omitempty"`
+	Stargazers       *uint32      `json:"stargazers,omitempty"`
 	MasterBranch     *string      `json:"master_branch,omitempty"`
 }
 
 type Account struct {
 	Login                    *string                   `json:"login,omitempty"`
-	ID                       *int                      `json:"id,omitempty"`
+	ID                       *uint32                   `json:"id,omitempty"`
 	NodeID                   *string                   `json:"node_id,omitempty"`
 	AvatarURL                *string                   `json:"avatar_url,omitempty"`
 	GravatarID               *string                   `json:"gravatar_id,omitempty"`
@@ -336,10 +336,10 @@ type Account struct {
 	Hireable                 *bool                     `json:"hireable,omitempty"`
 	Bio                      *string                   `json:"bio,omitempty"`
 	TwitterUsername          *string                   `json:"twitter_username,omitempty"`
-	PublicRepos              *int                      `json:"public_repos,omitempty"`
-	PublicGists              *int                      `json:"public_gists,omitempty"`
-	Followers                *int                      `json:"followers,omitempty"`
-	Following                *int                      `json:"following,omitempty"`
+	PublicRepos              *uint32                   `json:"public_repos,omitempty"`
+	PublicGists              *uint32                   `json:"public_gists,omitempty"`
+	Followers                *uint32                   `json:"followers,omitempty"`
+	Following                *uint32                   `json:"following,omitempty"`
 	CreatedAt                *TimeWrapper              `json:"created_at,omitempty"`
 	UpdatedAt                *TimeWrapper              `json:"updated_at,omitempty"`
 	OrganizationBillingEmail *string                   `json:"organization_billing_email,omitempty"`
@@ -376,7 +376,7 @@ type CommitData struct {
 	Committer    *CommitUser         `json:"committer,omitempty"`
 	Message      *string             `json:"message,omitempty"`
 	Tree         *TreeObject         `json:"tree,omitempty"`
-	CommentCount *int                `json:"comment_count,omitempty"`
+	CommentCount *uint32             `json:"comment_count,omitempty"`
 	Verification *VerificationObject `json:"verification,omitempty"`
 }
 
@@ -395,13 +395,13 @@ type Commit struct {
 type Installation struct {
 	AccessTokensURL        *string           `json:"access_tokens_url,omitempty"`
 	Account                *Account          `json:"account,omitempty"`
-	AppID                  *int              `json:"app_id,omitempty"`
+	AppID                  *uint32           `json:"app_id,omitempty"`
 	AppSlug                *string           `json:"app_slug,omitempty"`
 	CreatedAt              *TimeWrapper      `json:"created_at,omitempty"`
 	Events                 []string          `json:"events,omitempty"`
 	HasMultipleSingleFiles *bool             `json:"has_multiple_single_files,omitempty"`
 	HTMLURL                *string           `json:"html_url,omitempty"`
-	ID                     *int              `json:"id,omitempty"`
+	ID                     *uint32           `json:"id,omitempty"`
 	NodeID                 *string           `json:"node_id,omitempty"`
 	Permissions            map[string]string `json:"permissions,omitempty"`
 	RepositoriesURL        *string           `json:"repositories_url,omitempty"`
@@ -410,7 +410,7 @@ type Installation struct {
 	SingleFilePaths        []string          `json:"single_file_paths,omitempty"`
 	SuspendedAt            *TimeWrapper      `json:"suspended_at,omitempty"`
 	SuspendedBy            *string           `json:"suspended_by,omitempty"`
-	TargetID               *int              `json:"target_id,omitempty"`
+	TargetID               *uint32           `json:"target_id,omitempty"`
 	TargetType             *string           `json:"target_type,omitempty"`
 	UpdatedAt              *TimeWrapper      `json:"updated_at,omitempty"`
 }
@@ -418,12 +418,12 @@ type Installation struct {
 type Plan struct {
 	URL                 *string  `json:"url,omitempty"`
 	AccountsURL         *string  `json:"accounts_url,omitempty"`
-	ID                  *int     `json:"id,omitempty"`
-	Number              *int     `json:"number,omitempty"`
+	ID                  *uint32  `json:"id,omitempty"`
+	Number              *uint32  `json:"number,omitempty"`
 	Name                *string  `json:"name,omitempty"`
 	Description         *string  `json:"description,omitempty"`
-	MonthlyPriceInCents *int     `json:"monthly_price_in_cents,omitempty"`
-	YearlyPriceInCents  *int     `json:"yearly_price_in_cents,omitempty"`
+	MonthlyPriceInCents *uint32  `json:"monthly_price_in_cents,omitempty"`
+	YearlyPriceInCents  *uint32  `json:"yearly_price_in_cents,omitempty"`
 	PriceModel          *string  `json:"price_model,omitempty"`
 	HasFreeTrial        *bool    `json:"has_free_trial,omitempty"`
 	State               *string  `json:"state,omitempty"`
@@ -433,15 +433,15 @@ type Plan struct {
 
 type MarketplacePendingChange struct {
 	EffectiveDate *TimeWrapper `json:"effective_date,omitempty"`
-	UnitCount     *int         `json:"unit_count,omitempty"`
-	ID            *int         `json:"id,omitempty"`
+	UnitCount     *uint32      `json:"unit_count,omitempty"`
+	ID            *uint32      `json:"id,omitempty"`
 	Plan          *Plan        `json:"plan,omitempty"`
 }
 
 type MarketplacePurchase struct {
 	BillingCycle    *string      `json:"billing_cycle,omitempty"`
 	NextBillingDate *TimeWrapper `json:"next_billing_date"`
-	UnitCount       *int         `json:"unit_count,omitempty"`
+	UnitCount       *uint32      `json:"unit_count,omitempty"`
 	OnFreeTrial     *bool        `json:"on_free_trial,omitempty"`
 	FreeTrialEndsOn *TimeWrapper `json:"free_trial_ends_on,omitempty"`
 	UpdatedAt       *TimeWrapper `json:"updated_at,omitempty"`
@@ -458,7 +458,7 @@ type PullRequest struct {
 // Endpoint: /user/installations
 type UserInstallationsResponse struct {
 	Installations []Installation `json:"installations"`
-	TotalCount    int            `json:"total_count"`
+	TotalCount    uint32         `json:"total_count"`
 }
 
 /*
@@ -605,12 +605,12 @@ type UserInstallationsResponse struct {
 //
 
 type TestStruct struct {
-	IntegerField     *int      `json:"int,omitempty"`
+	IntegerField     *uint32   `json:"int,omitempty"`
 	FloatField       *float64  `json:"float,omitempty"`
 	StringField      *string   `json:"string,omitempty"`
 	BoolField        *bool     `json:"bool,omitempty"`
 	StringSliceField []string  `json:"stringslice,omitempty"`
-	IntSliceField    []int     `json:"intslice,omitempty"`
+	IntSliceField    []uint32  `json:"intslice,omitempty"`
 	FloatSliceField  []float64 `json:"floatslice,omitempty"`
 	BoolSliceField   []bool    `json:"boolslice,omitempty"`
 }
